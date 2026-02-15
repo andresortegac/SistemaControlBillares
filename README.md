@@ -1,59 +1,172 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Gestión para Billar
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema completo de gestión de inventario y control para salas de billar, desarrollado con Laravel 11, PHP 8.2 y MySQL.
 
-## About Laravel
+## Características
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- 🎱 **Gestión de Mesas**: Control de mesas de pool, snooker y carambola con temporizador en tiempo real
+- 📦 **Inventario**: Administración de productos, categorías y control de stock
+- 💰 **Punto de Venta**: Sistema de ventas con múltiples métodos de pago
+- 👥 **Clientes**: Gestión de clientes con sistema de membresías y puntos de fidelidad
+- 📊 **Reportes**: Reportes detallados de ventas, productos, uso de mesas y clientes
+- 🔐 **Roles de Usuario**: Admin, Gerente y Cajero con diferentes permisos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2 o superior
+- MySQL 5.7 o superior
+- Composer
+- Extensiones PHP: mbstring, xml, mysql, curl, zip, bcmath, tokenizer
 
-## Learning Laravel
+## Instalación
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Clonar o descargar el proyecto
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+cd /ruta/deseada
+copia la carpeta billar-system
+```
 
-## Laravel Sponsors
+### 2. Instalar dependencias
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+cd billar-system
+composer install
+```
 
-### Premium Partners
+### 3. Configurar el archivo de entorno
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+cp .env.example .env
+```
 
-## Contributing
+Edita el archivo `.env` con tus configuraciones de base de datos:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=billar_db
+DB_USERNAME=root
+DB_PASSWORD=tu_password
+```
 
-## Code of Conduct
+### 4. Generar la clave de la aplicación
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+### 5. Crear la base de datos
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Crea una base de datos llamada `billar_db` en tu servidor MySQL.
 
-## License
+### 6. Ejecutar migraciones y seeders
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan migrate --seed
+```
+
+Esto creará todas las tablas y poblará la base de datos con datos de prueba.
+
+### 7. Iniciar el servidor
+
+```bash
+php artisan serve
+```
+
+Visita: http://localhost:8000
+
+## Credenciales de Prueba
+
+### Administrador
+- Email: `admin@billar.com`
+- Password: `password`
+
+### Cajero
+- Email: `cajero@billar.com`
+- Password: `password`
+
+## Estructura del Proyecto
+
+```
+billar-system/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/    # Controladores MVC
+│   ├── Models/             # Modelos Eloquent
+│   └── Providers/          # Service Providers
+├── config/                 # Archivos de configuración
+├── database/
+│   ├── migrations/         # Migraciones de base de datos
+│   └── seeders/            # Seeders para datos de prueba
+├── resources/
+│   └── views/              # Vistas Blade
+├── routes/
+│   └── web.php             # Rutas de la aplicación
+└── .env                    # Variables de entorno
+```
+
+## Funcionalidades Principales
+
+### Dashboard
+- Estadísticas en tiempo real
+- Mesas en uso con temporizador
+- Productos con stock bajo
+- Ventas recientes
+- Productos más vendidos
+
+### Gestión de Mesas
+- Control de estado (disponible, ocupada, mantenimiento, reservada)
+- Inicio/pausa/fin de uso
+- Cálculo automático de tiempo y costo
+- Historial de uso por mesa
+
+### Inventario
+- Categorías de productos
+- Control de stock mínimo
+- Alertas de stock bajo
+- Ajuste de inventario
+
+### Ventas
+- Punto de venta intuitivo
+- Búsqueda rápida de productos
+- Descuentos por membresía
+- Múltiples métodos de pago
+- Impresión de tickets
+
+### Clientes
+- Registro de clientes
+- Sistema de membresías (Básica, Premium, VIP)
+- Puntos de fidelidad
+- Historial de compras y visitas
+
+### Reportes
+- Ventas por período
+- Productos más vendidos
+- Uso de mesas
+- Clientes frecuentes
+
+## Comandos Útiles
+
+```bash
+# Limpiar caché
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+
+# Crear nuevo usuario
+php artisan tinker
+>>> \App\Models\User::create(['name' => 'Nuevo', 'email' => 'nuevo@billar.com', 'password' => bcrypt('password'), 'rol' => 'cajero'])
+
+# Backup de base de datos
+mysqldump -u root -p billar_db > backup.sql
+```
+
+## Soporte
+
+Para reportar problemas o solicitar nuevas características, por favor crea un issue en el repositorio.
+
+## Licencia
+
+Este proyecto es de código abierto y está disponible bajo la licencia MIT.
