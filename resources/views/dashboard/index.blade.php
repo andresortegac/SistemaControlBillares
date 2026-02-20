@@ -2,6 +2,40 @@
 
 @section('title', 'Dashboard')
 
+@push('styles')
+<style>
+    .dashboard-stat .card-body {
+        min-height: 120px;
+    }
+
+    .dashboard-stat h3 {
+        font-size: 2rem;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .dashboard-stat .stat-icon {
+        font-size: 2rem;
+    }
+
+    @media (max-width: 1399.98px) {
+        .dashboard-stat h3 {
+            font-size: 1.75rem;
+        }
+    }
+
+    @media (max-width: 1199.98px) {
+        .dashboard-stat .card-body {
+            min-height: 110px;
+        }
+
+        .dashboard-stat h3 {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
@@ -12,8 +46,8 @@
 
 <!-- Estadísticas del Día -->
 <div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card stat-card success">
+    <div class="col-xxl-2 col-xl-4 col-md-6 mb-3">
+        <div class="card stat-card success dashboard-stat h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -21,14 +55,14 @@
                         <h3 class="mb-0">{{ $ventasHoy }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="bi bi-cart-check" style="font-size: 2.5rem; color: var(--success-color);"></i>
+                        <i class="bi bi-cart-check stat-icon" style="color: var(--success-color);"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card stat-card">
+    <div class="col-xxl-2 col-xl-4 col-md-6 mb-3">
+        <div class="card stat-card dashboard-stat h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -36,14 +70,44 @@
                         <h3 class="mb-0">${{ number_format($ingresosHoy, 2) }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="bi bi-currency-dollar" style="font-size: 2.5rem; color: var(--highlight-color);"></i>
+                        <i class="bi bi-currency-dollar stat-icon" style="color: var(--highlight-color);"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card stat-card info">
+    <div class="col-xxl-2 col-xl-4 col-md-6 mb-3">
+        <div class="card stat-card warning dashboard-stat h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Gastos Hoy</h6>
+                        <h3 class="mb-0">${{ number_format($gastosHoy, 2) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-wallet2 stat-icon" style="color: var(--warning-color);"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-2 col-xl-4 col-md-6 mb-3">
+        <div class="card stat-card {{ $utilidadHoy >= 0 ? 'success' : 'warning' }} dashboard-stat h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Utilidad Neta Hoy</h6>
+                        <h3 class="mb-0">${{ number_format($utilidadHoy, 2) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-graph-up-arrow stat-icon" style="color: {{ $utilidadHoy >= 0 ? 'var(--success-color)' : 'var(--danger-color)' }};"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-2 col-xl-4 col-md-6 mb-3">
+        <div class="card stat-card info dashboard-stat h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -51,14 +115,14 @@
                         <h3 class="mb-0">{{ $mesasOcupadas }} / {{ $totalMesas }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="bi bi-grid-3x3" style="font-size: 2.5rem; color: #17a2b8;"></i>
+                        <i class="bi bi-grid-3x3 stat-icon" style="color: #17a2b8;"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card stat-card warning">
+    <div class="col-xxl-2 col-xl-4 col-md-6 mb-3">
+        <div class="card stat-card warning dashboard-stat h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -66,7 +130,7 @@
                         <h3 class="mb-0">{{ $totalClientes }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="bi bi-people" style="font-size: 2.5rem; color: var(--warning-color);"></i>
+                        <i class="bi bi-people stat-icon" style="color: var(--warning-color);"></i>
                     </div>
                 </div>
             </div>

@@ -109,12 +109,26 @@ class UsoMesa extends Model
 
     public function pausar(): void
     {
+        if ($this->estado !== 'en_curso') {
+            return;
+        }
+
         $this->estado = 'pausada';
         $this->save();
     }
 
     public function reanudar(): void
     {
+        if ($this->estado !== 'pausada') {
+            return;
+        }
+
+        // Excluir del cronometro el tiempo transcurrido durante la pausa.
+        if ($this->updated_at) {
+            $segundosPausada = $this->updated_at->diffInSeconds(now());
+            $this->hora_inicio = Carbon::parse($this->hora_inicio)->addSeconds($segundosPausada);
+        }
+
         $this->estado = 'en_curso';
         $this->save();
     }

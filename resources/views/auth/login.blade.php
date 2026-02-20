@@ -11,7 +11,7 @@
             <p class="text-muted">Sistema de Gestión</p>
         </div>
         
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login.post') }}">
             @csrf
             
             <div class="mb-3">

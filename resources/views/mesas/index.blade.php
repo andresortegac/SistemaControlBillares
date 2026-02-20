@@ -53,6 +53,7 @@
     @foreach($mesas as $mesa)
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
         <div class="card mesa-card h-100 @if($mesa->estado == 'disponible') mesa-disponible @elseif($mesa->estado == 'ocupada') mesa-ocupada @elseif($mesa->estado == 'mantenimiento') mesa-mantenimiento @else mesa-reservada @endif">
+            <a href="{{ route('mesas.show', $mesa) }}" class="stretched-link mesa-link" aria-label="Ver detalle de {{ $mesa->nombre }}"></a>
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
@@ -63,44 +64,45 @@
                         {{ ucfirst($mesa->estado) }}
                     </span>
                 </div>
-                
-                <p class="mb-2">
-                    <i class="bi bi-currency-dollar"></i> 
-                    <strong>${{ number_format($mesa->precio_por_hora, 2) }}</strong> / hora
-                </p>
-                
+
                 @if($mesa->descripcion)
                 <p class="small text-muted mb-3">{{ Str::limit($mesa->descripcion, 50) }}</p>
                 @endif
-                
-                @if($mesa->estaOcupada() && $mesa->usoActivo())
-                    @php $uso = $mesa->usoActivo(); @endphp
-                    <div class="bg-white bg-opacity-50 p-2 rounded mb-3">
-                        <div class="d-flex justify-content-between">
-                            <small><i class="bi bi-clock"></i> Tiempo:</small>
-                            <strong class="timer" data-inicio="{{ $uso->hora_inicio }}">
-                                {{ $uso->getTiempoTranscurrido()['formateado'] }}
-                            </strong>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <small><i class="bi bi-currency-dollar"></i> Total:</small>
-                            <strong>${{ number_format($uso->getCostoActual(), 2) }}</strong>
-                        </div>
-                    </div>
-                @endif
-                
-                <div class="d-flex gap-2 flex-wrap">
+
+                <div class="d-flex gap-2 flex-wrap position-relative" style="z-index: 3;">
+                    @if($mesa->cuentaActiva)
+                        <a href="{{ route('cuentas_mesa.show', $mesa->cuentaActiva) }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-receipt-cutoff"></i> Ver Cuenta
+                        </a>
+                    @elseif($mesa->estaDisponible())
+                        <form action="{{ route('mesas.cuentas.store', $mesa) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-receipt"></i> Abrir Cuenta
+                            </button>
+                        </form>
+                    @endif
+
                     @if($mesa->estaDisponible())
                         <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#iniciarModal{{ $mesa->id }}">
                             <i class="bi bi-play"></i> Iniciar
                         </button>
                     @elseif($mesa->estaOcupada())
-                        <form action="{{ route('mesas.pausar', $mesa) }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-warning btn-sm">
-                                <i class="bi bi-pause"></i>
-                            </button>
-                        </form>
+                        @if($mesa->usoEnCurso())
+                            <form action="{{ route('mesas.pausar', $mesa) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pause"></i>
+                                </button>
+                            </form>
+                        @elseif($mesa->usoPausado())
+                            <form action="{{ route('mesas.reanudar', $mesa) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-play"></i> Reanudar
+                                </button>
+                            </form>
+                        @endif
                         <form action="{{ route('mesas.finalizar', $mesa) }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-danger btn-sm">
@@ -115,11 +117,14 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('mesas.show', $mesa) }}"><i class="bi bi-eye"></i> Ver Detalles</a></li>
+                            @if($mesa->cuentaActiva)
+                            <li><a class="dropdown-item" href="{{ route('cuentas_mesa.show', $mesa->cuentaActiva) }}"><i class="bi bi-receipt-cutoff"></i> Cuenta Activa</a></li>
+                            @endif
                             @if(auth()->user()->esAdmin() || auth()->user()->esGerente())
                             <li><a class="dropdown-item" href="{{ route('mesas.edit', $mesa) }}"><i class="bi bi-pencil"></i> Editar</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form action="{{ route('mesas.destroy', $mesa) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
+                                <form action="{{ route('mesas.destroy', $mesa) }}" method="POST" onsubmit="return confirm('¿Eliminar la mesa y todo su historial de usos finalizados/cancelados? Esta acción no se puede deshacer.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash"></i> Eliminar</button>
@@ -174,20 +179,10 @@
 
 @push('scripts')
 <script>
-    function actualizarTimers() {
-        document.querySelectorAll('.timer').forEach(timer => {
-            const inicio = new Date(timer.dataset.inicio);
-            const ahora = new Date();
-            const diff = Math.floor((ahora - inicio) / 1000);
-            
-            const horas = Math.floor(diff / 3600);
-            const minutos = Math.floor((diff % 3600) / 60);
-            const segundos = diff % 60;
-            
-            timer.textContent = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+    document.querySelectorAll('.mesa-card button, .mesa-card form, .mesa-card .dropdown-menu a').forEach((element) => {
+        element.addEventListener('click', function (event) {
+            event.stopPropagation();
         });
-    }
-    
-    setInterval(actualizarTimers, 1000);
+    });
 </script>
 @endpush

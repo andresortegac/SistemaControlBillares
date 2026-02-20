@@ -44,6 +44,11 @@ class User extends Authenticatable
         return $this->hasMany(UsoMesa::class);
     }
 
+    public function gastos(): HasMany
+    {
+        return $this->hasMany(Gasto::class);
+    }
+
     public function esAdmin(): bool
     {
         return $this->rol === 'admin';

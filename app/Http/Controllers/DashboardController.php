@@ -8,6 +8,7 @@ use App\Models\Venta;
 use App\Models\Producto;
 use App\Models\Cliente;
 use App\Models\UsoMesa;
+use App\Models\Gasto;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -17,6 +18,8 @@ class DashboardController extends Controller
         // Estadísticas del día
         $ventasHoy = Venta::hoy()->pagadas()->count();
         $ingresosHoy = Venta::hoy()->pagadas()->sum('total');
+        $gastosHoy = Gasto::hoy()->sum('monto');
+        $utilidadHoy = $ingresosHoy - $gastosHoy;
         
         // Mesas
         $mesasOcupadas = Mesa::where('estado', 'ocupada')->count();
@@ -64,6 +67,8 @@ class DashboardController extends Controller
         return view('dashboard.index', compact(
             'ventasHoy',
             'ingresosHoy',
+            'gastosHoy',
+            'utilidadHoy',
             'mesasOcupadas',
             'mesasDisponibles',
             'totalMesas',
